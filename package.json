@@ -1,0 +1,33 @@
+{
+  "name": "node2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajax": "0.0.4",
+    "body-parse": "^0.1.0",
+    "canvas-gauges": "^2.1.7",
+    "dns": "^0.2.2",
+    "ejs": "^3.0.2",
+    "express": "^4.17.1",
+    "figlet": "^1.4.0",
+    "http": "0.0.1-security",
+    "install": "^0.13.0",
+    "jquery": "^3.4.1",
+    "mongodb": "^3.5.3",
+    "mongoose": "^5.11.8",
+    "mongoose-html": "0.0.1",
+    "morgan": "^1.9.1",
+    "mosca": "^2.8.3",
+    "mqtt": "^3.0.0",
+    "nodemailer": "^6.4.6",
+    "nodemon": "^2.0.4",
+    "xoauth2": "^1.2.0",
+    "yargs": "^15.3.1"
+  }
+}

@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+<style type="text/css">
+ th {
+  background-color: #4CAF50;
+  color: white;
+
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+input[type=number] {
+   width: 50px;
+
+}
+input[type='text'],
+input[type='number'],
+input {
+font-size: 16px;
+}
+select#btn option[value="1"]   { background-image:url(img/pause.png)}
+select#btn option[value="2"] { background-image:url(img/unpause.png)}
+select#btn option[value="3"] { background-image:url(img/cancel.png)}
+#my{
+zoom: 75%;
+}
+#MODALS{
+zoom: 80%;
+}
+#three{
+zoom: 150%;
+}
+<style>
+.vl {
+  border-left: 3px solid black;
+  height: 500px;
+}
+.verticalLine {
+  border-left: thick solid #ff0000;
+}
+
+</style>
+
+<div class="vl"></div>
+</style>
+
+
+<head>
+	<meta charset="utf-8">
+	<title>Plataforma de Control</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<!-- css -->
+	<link href="css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<!-- skin color -->
+	<link href="color/default.css" rel="stylesheet">
+	<!--[if lt IE 7]>
+    <link href="css/font-awesome-ie7.css" type="text/css" rel="stylesheet">
+  <![endif]-->
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="img/icons/idc.ico">
+
+	<!-- =======================================================
+		Theme Name: Maxim
+		Theme URL: https://bootstrapmade.com/maxim-free-onepage-bootstrap-theme/
+		Author: BootstrapMade.com
+		Author URL: https://bootstrapmade.com
+	======================================================= -->
+
+</head>
+<body id="my">
+	<!-- navbar -->
+	<div class="navbar-wrapper">
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<!-- Responsive navbar -->
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</a>
+					<h1 class="brand"><a href="/">IDC LAB</a><p id="UserName"><strong>BIENVENIDO</strong></p></h1>
+					<!-- navigation -->
+					<nav class="pull-right nav-collapse collapse">
+						<ul id="menu-main" class="nav">
+							<li><a title="team" href="">ACCIONADORES</a></li>
+							<li><a title="services" href="">SENSORES</a></li>
+							<li><a title="works" href="">ESTADISTICAS</a></li>
+							<li><a title="contact" href="">AYUDA</a></li>
+							<li><a id ="exitBtn">CERRAR SESIÓN</a></li>
+						</ul><
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- spacer section -->
+	<section>
+	   <br>
+       <br>
+       <br>
+	</section>
+    
+	<!-- end spacer section -->
+	<!-- section: team -->
+    <section id="maincontent" class="inner">
+        <div class="container">
+        <div class="row">
+       <div id="ACCIONADORES" class="span12" >
+                    <h1>ACCIONADORES</h1>
+                    <hr>
+                    <div id="loadingDATA"></div>
+                    <!-- start: Accordion -->
+                    <!--end: Accordion -->
+                </div>
+        <!-- end container -->
+</div>
+</div>
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <h1></h1>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#Lights" data-toggle="tab">
+                            HISTORIAL</a></li>
+                            <li><a href ="#four" data-toggle="tab">PROGRAMAR ALARMA</a></li>
+                            <li><a href ="#more" data-toggle="tab">CONSUMO</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="Lights">
+                                <input type="button" id="deletehistory"class="btn btn-large btn-info" value="BORRAR HISTORIAL"><input type="button" style="margin-left: 10px"name="completeHistory" class="btn btn-large btn-success" value="VER HISTORIAL COMPLETO" id="completeHistory">
+                                <hr>
+                                <div id="lightsHistory"></div>
+                            </div>
+                            <div class="tab-pane" id="more">
+                                <div class="row">
+                                <div class="span5" id="consume">
+                                <h5 align="right">Actualizar <strong>TODOS</strong> los consumos  
+                                    <input style="margin-left: 10px" type="image" src="img/refresh.png" align="right" alt="Image" height="30" width="30" onclick="refreshConsume()">
+                                </h5>
+                                <br>
+                                <div class="verticalLine"></div>
+                                </div>
+                                
+                                <div class="span5" style="margin-right: 100px">
+                                    <h4>Entra a la pagina de Sensores y Graficos para obtener mas información al respecto</h4>
+                                    <br>
+                                    <input type="button" name="viewSensors" class="btn btn-info btn-large" id="viewSensors" value="VER SENSORES Y GRAFICOS">
+                                </div>
+
+
+
+                        </div>
+                    </div>
+                            <div class="tab-pane" id="three">
+                        <div class="chart-container" style="position: relative; height:80vh; width:800vw">
+    <div id="json"></div>
+</div>
+                            </div>
+                        <div class="tab-pane" id="four">
+                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#createAlarms">Crear Alarma</button> <input type="button" class="btn btn-danger" 
+                        name="Borrar alarmas" onclick="deleteAlarms()" value="Borrar todas las Alarmas">
+                        
+                        <hr>
+                            <div id="createAlarms" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                                <h4 class="modal-title">Crear Alarma</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+    <label for="AllObjectsList">Selecciona los objectos:</label>
+    <div id="AllObjectsList"></div>
+    <label>Elige un dia de la semana</label>
+    <input list="days" name="alarm" id="alarm">
+    <datalist id="days">
+        <option value="Sunday" />
+        <option value="Monday" />
+        <option value="Tuesday" />
+        <option value="Wednesday" />
+        <option value="Thursday" />
+        <option value="Friday" />
+        <option value="Saturday" />
+        <option value="Every Days">    
+    </datalist>
+    <hr>
+    <label>Elige una hora</label>
+    <input type="time" name="Alarmhour" id="Alarmhour">
+    
+    <hr>
+    <label>Elige una acción</label>
+    <input list="BtnOptions" name="AlarmOptions" id="AlarmOptions">
+    <hr>
+    <input class="btn btn-success" class="center" type="button" name="setAlarm" id="setAlarm" value="set" onclick="alarm()">
+</div>
+
+
+                                    <script type="text/javascript" src="AlarmController.js">
+</script>
+                            
+                                </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+                            
+                      
+                        </div>
+                        </div>
+                    </div>
+
+                </div>
+             
+            </div>
+
+        </div>
+
+            
+    </section>
+
+
+    <!-- -->
+	<a href="#" class="scrollup"><i class="icon-angle-up icon-square icon-bgdark icon-2x"></i></a>
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+	<!-- nav -->
+	<script src="js/jquery.scrollTo.js"></script>
+	<script src="js/jquery.nav.js"></script>
+	<!-- localScroll -->
+	<script src="js/jquery.localScroll.js"></script>
+	<!-- bootstrap -->
+	<script src="js/bootstrap.js"></script>
+	<!-- prettyPhoto -->
+	<script src="js/jquery.prettyPhoto.js"></script>
+	<!-- Works scripts -->
+	<script src="js/isotope.js"></script>
+	<!-- flexslider -->
+	<script src="js/jquery.flexslider.js"></script>
+	<!-- inview -->
+	<script src="js/inview.js"></script>
+	<!-- animation -->
+	<script src="js/animate.js"></script>
+	<!-- twitter -->
+	<!--<script src="js/jquery.tweet.js"></script>-->
+	<!-- custom functions -->
+	<script src="js/custom.js"></script>
+    <!--Canvas JS-->
+     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <!--Rgraph-->
+    <script src="js/RGraph.common.core.js"></script>
+    <script src="js/RGraph.line.js"></script>
+    <!-- -->       
+</body>
+<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript">
+     var loadingGIF = document.createElement('img')
+                loadingGIF.setAttribute('src','img/loading.gif')
+                loadingGIF.setAttribute('class','center')
+                $('#loadingDATA').html(loadingGIF)
+    var Userdata
+    var ip
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if(urlParams.get('user') == null || urlParams.get('user') == 'undefined'){
+      console.log('user error')     
+      window.location.href="loginError?err=404"
+
+        } 
+    var user = urlParams.get('user').replace(/['""]+/g,'')
+    $.get('http://ip-api.com/json', function Ajax_request(data){
+        console.log(data.query)
+        ip = data.query
+        $.ajax({
+        type: 'post',
+        url: '/getDataUSer',
+        data: {'user': urlParams.get('user').replace(/['"]+/g, ''), 'ip': data.query, 'data': JSON.stringify(data)}
+    }).done(function(res){
+     $('#loadingDATA').html('<div></div>')   
+        console.log(res)
+    if(res=='err'){
+
+        window.location.href="loginError?err=404"
+
+        } else if(res=='clear'){
+
+        var msg = document.createElement('div')
+        msg.innerHTML += '<h2>NO SE ENCONTRO NINGUN ACCIONADOR DEL USUARIO!</h2>'
+        $('#ACCIONADORES').append(msg)
+
+    } else if (JSON.parse(res).request=='find'){
+         Userdata = JSON.parse(res)
+         window.location.href="page?user="+Userdata.user.replace(/['"]+/g, '')
+    } else {
+    Userdata = JSON.parse(res)    
+    var Alarms = JSON.parse(Userdata.Alarms)
+    var Object = JSON.parse(Userdata.Objects)    
+    var user = urlParams.get('user')
+    var element = document.getElementById("UserName")
+    element.innerHTML=user
+    var ObjectType= []
+    for(var i = 0; i<Object.length; i++){
+        ObjectType[i] = Object[i].Class;
+    } 
+    console.log(ObjectType)
+    for(var i = 0; i<ObjectType.length-1; i++){
+        var ObjectTypeA = []
+        ObjectTypeA[i] = ObjectType[i+1]
+        if(ObjectType[i]==ObjectTypeA[i]){
+            ObjectType.splice(i, 1)
+        }
+        if(ObjectType[i]!=ObjectTypeA[i]){
+        }
+    ObjectType=ObjectTypeA
+    }
+    var Objects = ''
+    var Modals = []
+    var Buttons = ''
+    var ObjectFilter = []
+    var ObjConsume = []
+    for(var i=0; i<ObjectType.length; i++){
+    Buttons = ''
+    ObjectFilter = Object.filter(function(obj) {
+    if(obj.Class!='Sensor'){
+    return obj.Class == ObjectType[i];
+            }
+    });        
+    for(var e = 0; e<ObjectFilter.length;e++){
+    ObjConsume[e] = document.createElement('div')
+    ObjConsume[e].innerHTML += '<h6>'+ObjectFilter[e].Name+' || Consumo:<strong id="'+ObjectFilter[e].Name+':'+ObjectFilter[e].direction+'"> '+ObjectFilter[e].Consume+' </strong><input id="'+ObjectFilter[e].Name+','+ObjectFilter[e].direction+'" style="margin-left: 10px" type="image" src="img/refresh.png" align="right" alt="Image" height="20" width="20" onclick="refreshConsumeOne(this.id)"></h6>'
+
+    $('#consume').append(ObjConsume[e]) 
+    Objects += '<option value="'+ObjectFilter[e].Name+','+ObjectFilter[e].direction+'">'+ObjectFilter[e].Name+'</option>'
+    Buttons +='<strong>Accionador: </strong><strong id="buttonName'+i+e+'" value="'+ObjectFilter[e].Name+'">'+ObjectFilter[e].Name+'</strong><strong>|Estado: </strong> '+'<strong id="buttonStatus'+i+e+'">ENCENDIDO</strong></p><p>'+'<button id="buttonON'+i+e+'" class="btn btn-success" value="'+ObjectFilter[e].direction+'1'+'" type="submit" onclick="interruptor(this.id)">ON</button><button id="buttonOFF'+i+e+'" class="btn btn-inverse" value="'+ObjectFilter[e].direction+'0'+'" type="submit" onclick="interruptor(this.id)">OFF</button><h4>TIEMPO: <strong id="Btntime'+i+e+'">0d, 00:00:00</strong><input onclick="cancel1(this.id)" id="Cancel1,'+i+e+'"type="image" src="img/cancel.png"  height="20" width="20" style="margin-left:10px" value="cancel1">|| <strong id="Btntime2'+i+e+'">0d, 00:00:00</strong><input onclick="cancel2(this.id)" id="Cancel2,'+i+e+'" type="image" src="img/cancel.png" height="20" width="20" style="margin-left: 10px" value="cancel2"><input onclick="pause(this.id)" id="pause/unpause,'+i+e+'" type="image" src="img/pause.png" height="20" width="20" style="margin-left: 10px" value="pause"></h4><div><input type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal'+i+e+'" value="PROGRAMAR"></div>'
+    
+    Modals[e] = document.createElement("div")
+     
+    Modals[e].innerHTML += '<div id="myModal'+i+e+'" class="modal fade" role="dialog"><div class="modal-dialog modal-xl"><!-- Modal content--><div class="modal-content"><div class="modal-header"><h5>PROGRAME EL ACCIONADOR PARA UN DIA ESPECIFICO</h5><label>ELIGE UNA ACCIÓN</label><input list="BtnOptions" id="method1'+i+e+'"><label>ELIGE UN DIA Y UNA HORA</label><input id="datetime-local'+i+e+'" type="datetime-local" name="time"><hr><h5>PROGRAME EL ACCIONADOR PARA UN TIEMPO ESPECIFICO</h5><label>ELIGE UNA ACCION</label><input type="list" name="list" list="BtnOptions" id="method2'+i+e+'"><label>ELIGE UN TIEMPO</label><input id="hours'+i+e+'" value="0" type="number">:<input id="minutes'+i+e+'"type="number" value="00" name=""><div class="modal-footer"><input id="'+i+e+','+ObjectFilter[e].direction+'" type="button" class="btn btn-default" data-dismiss="modal" value="Realizado" id="'+i+e+'" onclick="setAlarm(this.id)"></div></div></div></div>'
+    $('#MODALS').append(Modals[e])
+    
+    }
+    var ObjectsList = document.createElement('div')
+    ObjectsList.innerHTML = '<select id="ObjectsList" multiple>'+Objects+'</select>'
+    $('#AllObjectsList').html(ObjectsList)
+    var accordions = []
+    accordions[i] = document.createElement("div")
+    accordions[i].innerHTML += '<div class="accordion" id="accordion2'+i+'"><div class="accordion-group"><div class="accordion-heading"><a class="accordion-toggle active" data-toggle="collapse" data-parent="#accordion2'+i+'" href="#collapseOne'+i+'"><i class="icon-minus"></i>'+ObjectType[i]+'</a></div><div id="collapseOne'+i+'" class="accordion-body collapse in"><div class="accordion-inner">'+Buttons+'</div></div></div></div>';
+    $('#ACCIONADORES').append(accordions[i])
+    }
+
+    var data = Alarms
+    var AlarmsPage = ''
+    for (var i=0; i<data.length; i++){
+    AlarmsPage += '<tr><td>'+data[i].Tiempo+'</td><td><a title="Los accionadores son:'+JSON.stringify(data[i].Accionadores).replace(/['"]+/g, '')+'">ver</a></td><td id="Es '+i+'"><button class="btn btn-small btn-inverse btn-rounded" id="'+i+',OFF" style="margin-left: 50px" onclick="AlarmStatus(this.id)">OFF</button></td></tr>'
+                }
+    var table = document.createElement('table')
+    table.setAttribute('style', 'width: 100% ')
+    table.setAttribute('id', 'AlarmTable')
+    table.innerHTML += '<tr><th>HORA Y DIA</th><th>ACCIONADORES</th><th>ON/OFF</th><tr>'+AlarmsPage
+    $('#four').append(table)
+
+   
+    }})
+   })
+</script>
+<script>
+</script>
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript" src="login.js"></script>
+<script type="text/javascript" src="ConsumeController.js"></script>
+<script type="text/javascript" src="PageController.js"></script>
+</div>
+</html>
+<div class="row">
+<div id="MODALS"></div>
+</div>
+
+<button onclick="myFunction()"></button>
+<datalist id="BtnOptions">
+    <option>APAGAR</option>
+    <option>ENCENDER</option>
+</datalist>
+<script type="text/javascript"> 
+
+    window.onload = function() {
+
+var dataPoints = [];
+
+var chart = new CanvasJS.Chart("json", {
+    theme: "light1", // "light2", "dark1", "dark2"
+    animationEnabled: false, // change to true      
+    title:{
+        text: "Basic Column Chart"
+    },
+    data: [
+    {
+        // Change type to "bar", "area", "spline", "pie",etc.
+        type: "column",
+        dataPoints: dataPoints
+    }
+    ]
+});
+
+function addData(data) {
+    for (var i = 0; i < data.length; i++) {
+        dataPoints.push({
+            label: data[i].Name,
+            y: parseInt(data[i].Consume)
+        })};
+    chart.render();
+
+}
+
+$.getJSON('/get', addData);
+
+}
+</script>

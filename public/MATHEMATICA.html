@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MATHEMATICA</title>
+</head>
+ <!-- -->
+	<a href="#" class="scrollup"><i class="icon-angle-up icon-square icon-bgdark icon-2x"></i></a>
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+	<!-- nav -->
+	<script src="js/jquery.scrollTo.js"></script>
+	<script src="js/jquery.nav.js"></script>
+	<!-- localScroll -->
+	<script src="js/jquery.localScroll.js"></script>
+	<!-- bootstrap -->
+	<script src="js/bootstrap.js"></script>
+	<!-- prettyPhoto -->
+	<script src="js/jquery.prettyPhoto.js"></script>
+	<!-- Works scripts -->
+	<script src="js/isotope.js"></script>
+	<!-- flexslider -->
+	<script src="js/jquery.flexslider.js"></script>
+	<!-- inview -->
+	<script src="js/inview.js"></script>
+	<!-- animation -->
+	<script src="js/animate.js"></script>
+	<!-- twitter -->
+	<!--<script src="js/jquery.tweet.js"></script>-->
+	<!-- custom functions -->
+	<script src="js/custom.js"></script>
+	<!-- CANVAS.JS -->
+<script type="text/javascript" src="mathematica.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	<!---->		
+<body>
+<input type="number" id="number2"><label>X^</label><input type="number" id="number1" maxlength="1"><input type="submit" name="result" id="result" value="result" onclick="result()">
+</body>
+<script src="http://nerdamer.com/js/nerdamer.core.js"></script>
+<script src="http://nerdamer.com/js/Algebra.js"></script>
+<script src="http://nerdamer.com/js/Calculus.js"></script>
+<form name="formulario">         
+  Enter function:
+  <input name="func" type="text" size="15" />           
+  <input type="submit" value="Differentiate" />   
+</form>
+<div id="text"></div>
+<script type="text/javascript">
+	document.forms.formulario.addEventListener('submit', function(e) {
+  e.preventDefault(); // Don't send form
+  var expr = this.elements.func.value,
+      diff = nerdamer.getCore().Calculus.diff(nerdamer(expr).symbol).text();
+  document.getElementById('text').textContent = diff;
+});
+
+</script>
+
+
+</html>

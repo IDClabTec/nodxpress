@@ -1,0 +1,538 @@
+<html>
+  <head>
+        <meta charset="utf-8">
+        <style type="text/css">
+
+
+
+p.collapse {
+  visibility: collapse;
+}
+p.visible {
+  visibility: visible;
+}
+      .center {
+      margin: auto; 
+      width: 50%;
+      border: 1px solid black;
+      padding: 10px;
+      }
+
+
+table, th, td {
+  border: 1px solid black;
+  background-color: #4CAF50;
+  color: white;
+}
+.table-content {
+  border: 1px solid black;
+} 
+html { background-color: black; }
+body { margin:50px; background-color: white; }
+</style>
+  </head>
+
+      <div class="navbar-wrapper" style="background-color: #E6E6FA;">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- Responsive navbar -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+        </a>
+          <h1 class="brand"><a href="/">Sensores</a></h1>
+          <!-- navigation -->
+          <nav class="pull-right nav-collapse collapse">
+            <ul id="menu-main" class="nav">
+              <li><a title="contact" href="">AYUDA</a></li>
+              <li><a id ="exitBtn" style="margin-right: 10px">SALIR</a></li>
+              <li><a id ="exitBtn"></a></li>
+            </ul><
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+
+    <!-- jQuery -->
+  <script src="js/jquery.js"></script>
+  <!-- nav -->
+  <script src="js/jquery.scrollTo.js"></script>
+  <script src="js/jquery.nav.js"></script>
+  <!-- gauge-canvas-->
+  <script src="js/gauge-min.js"></script>
+  <!-- localScroll -->
+  <script src="js/jquery.localScroll.js"></script>
+  <!-- bootstrap -->
+  <script src="js/bootstrap.js"></script>
+  <!-- prettyPhoto -->
+  <script src="js/jquery.prettyPhoto.js"></script>
+  <!-- Works scripts -->
+  <script src="js/isotope.js"></script>
+  <!-- flexslider -->
+  <script src="js/jquery.flexslider.js"></script>
+  <!-- inview -->
+  <script src="js/inview.js"></script>
+  <!-- animation -->
+  <script src="js/animate.js"></script>
+  <!--XLXS-->
+    <script src="js/xlsx.full.min.js"></script>
+  <!--FileSave-->
+  <script src="https://greasyfork.org/scripts/381230-filesaver-min-js/code/FileSaverminjs.js?version=685345"></script>
+  <!-- twitter -->
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <!--<script src="js/jquery.tweet.js"></script>-->
+  <!-- custom functions -->
+  <script src="js/custom.js"></script>
+    <!--Canvas JS-->
+     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+
+    <!--Rgraph-->
+    <script src="js/RGraph.common.core.js"></script>
+    <script src="js/RGraph.line.js"></script>
+    <!-- --> 
+   <div class="row">
+      <div class="table-content" style="background-color:#E6E6FA" type="container">
+        <hr>
+          <div align="right" style="margin-right: 10px"> 
+          <h4>Estado de los sensores:</h4><strong id="mqttStatus">disconnected</strong>
+
+<button id="button-a">DOWNLOAD</button>
+          <br><br>
+          </div>
+    </div>
+
+
+  </head>
+    <div style="background-color: rgba(150,150,150,0.15);" class="header"></div>
+</html>
+    <script>
+    function takeSamples(){
+      var sensor= $('#SensorNameSample')[0].innerText;var time= Math.floor($('#timeSample').val()*3600); var interval = Math.floor($('#periodicSample').val()*1000);var name=$("#SampleName").val();
+     	var t = new Date();
+	t.setSeconds(t.getSeconds() + time);
+	console.log(time)
+	console.log(t)
+      var info = {'sensor': sensor, 'time':t, 'interval':interval, 'user':new URLSearchParams(window.location.search).get("user"), 'name': name};
+      $.ajax({
+        url: '/takeSamples',
+        type: 'POST',
+        data: info,
+        beforeSend: function(){
+          console.log('enviando...')
+        },
+      })
+      .done(function() {
+        console.log("success");
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+      
+    };
+    function calcular_Area(x,y,constan){
+      var area = 0;
+        if(constan==true){
+          console.log(new Date(x[0]))
+          var interval=parseFloat((new Date(x[1])-new Date(x[0]))/1000);for(var i=0;i<y.length;i++){console.log(interval);area+=parseFloat(parseFloat(y[i])*interval);}; return area;
+        } else if(constan==false){
+            for(var i=0;i<x.length;i++){
+              if(i==0){
+                area+=parseFloat(y[i]*parseFloat(new Date(x[i+1])-new Date(x[i]))/1000);
+              } else {
+                console.log(area)
+              area+=parseFloat(y[i]*parseFloat((new Date(x[i])-new Date(x[i-1])))/1000);
+            }} 
+            return area;
+        }
+      }
+
+    function view(){
+      var sensor= $('#sensorSelected').val();
+    $.ajax({
+        url: '/viewSamples',
+        type: 'POST',
+        data: {'sensor': sensor,'user':new URLSearchParams(window.location.search).get("user")},
+        beforeSend: function(){
+          console.log('enviando...')
+        },
+      }).done(function(data){
+        var data=JSON.parse(data);
+        console.log(data.length);
+        var table = document.createElement('div');
+        var list = '';
+        var average = 0;
+        var label = [[],[]];
+        for(var i=0;i<data.length;i++){
+          average+=parseFloat(data[i].sample)
+          list+='<tr><td>'+data[i].time+'</td><td>'+data[i].sample+'</td></tr>'
+          label[0][i]=data[i].time;label[1][i]=data[i].sample;
+        };
+        var area = calcular_Area(label[0],label[1],true)
+        console.log(area);
+        average = (average/data.length)
+        table.innerHTML+='<h4>Mostrando datos de:  '+sensor+'</h4><h4><strong>Promedio:</strong>  '+average+'</h4><h4>Area bajo la curva: '+area+'</h4><table style="width:100%"<tr><th>Tiempo</t><th>Muestra</th><tr>'+list+'</table>'
+        console.log(table)
+        $('#viewData').append(table)
+      })
+    }
+
+function memorySizeOf(obj) {
+    var bytes = 0;
+
+    function sizeOf(obj) {
+        if(obj !== null && obj !== undefined) {
+            switch(typeof obj) {
+            case 'number':
+                bytes += 8;
+                break;
+            case 'string':
+                bytes += obj.length * 2;
+                break;
+            case 'boolean':
+                bytes += 4;
+                break;
+            case 'object':
+                var objClass = Object.prototype.toString.call(obj).slice(8, -1);
+                if(objClass === 'Object' || objClass === 'Array') {
+                    for(var key in obj) {
+                        if(!obj.hasOwnProperty(key)) continue;
+                        sizeOf(obj[key]);
+                    }
+                } else bytes += obj.toString().length * 2;
+                break;
+            }
+        }
+        return bytes;
+    };
+
+    function formatByteSize(bytes) {
+        if(bytes < 1024) return bytes + " bytes";
+        else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KiB";
+        else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MiB";
+        else return(bytes / 1073741824).toFixed(3) + " GiB";
+    };
+
+    return formatByteSize(sizeOf(obj));
+};
+    </script>
+
+ <script type="text/javascript">
+	
+    document.body.style.cursor='wait';
+    var SensorData;
+    var samples = {};
+     var loadingGIF1 = document.createElement('img')
+     loadingGIF1.setAttribute('src','img/loading.gif')
+     loadingGIF1.setAttribute('class','center')
+     loadingGIF1.setAttribute('id','lgif1')
+     var loadingGIF2 = document.createElement('img')
+     loadingGIF2.setAttribute('src','img/loading.gif')                                                                                       
+     loadingGIF2.setAttribute('class','center'); 
+     loadingGIF2.setAttribute('id','lgif2');  
+        $("temp").html(loadingGIF1); 
+	$("flo").html(loadingGIF2);
+  $.ajax({
+    url: "/getDataSensors",
+    type: "POST",
+    data: {'user': new URLSearchParams(window.location.search).get("user")}
+
+  }).done(function(data){
+    console.log(JSON.parse(data));
+    var Sensors = JSON.parse(data);
+    for(var i=0;i<Sensors.length;i++){
+    if(Sensors[i].data.length!=0){
+      samples[Sensors[i].Name.toString()]=Sensors[i].data;
+      
+    }
+
+    };
+    divSensorTemp = document.createElement("div");
+    for(var i=0;i<Sensors.length;i++){
+console.log(Sensors[i].type);
+	if(Sensors[i].type==undefined || Sensors[i].type=='temp'){
+      var tempData = document.createElement('canvas');
+      tempData.setAttribute('id',Sensors[i].Dir);
+      tempData.setAttribute('title', Sensors[i].Name);
+      tempData.setAttribute('data-title', Sensors[i].Name);
+      tempData.setAttribute('data-type', 'radial-gauge');
+      tempData.setAttribute('data-width', 200);
+      tempData.setAttribute('data-height', 200);
+      tempData.setAttribute('data-value', 0);
+      tempData.setAttribute('data-units', "°C");
+      tempData.setAttribute('data-major-ticks',"-20,-10,0,10,20,30,40,50,60" );
+      tempData.setAttribute('data-max-value', "60");
+      tempData.setAttribute('data-min-value', "-20");
+      tempData.setAttribute('data-stroke-ticks',"true" );
+      tempData.setAttribute('data-minor-ticks', "10");
+      tempData.setAttribute('data-highlights', '[{ "from": 0, "to": 10, "color": "rgba(75,25,200,.35)" },{ "from": 20, "to":30, "color": "rgba(150,50,50,.35)" },{ "from": 30, "to": 40, "color": "rgba(255,100,30,.50)" },{ "from": 40, "to": 50, "color": "rgba(255,50,0,.50)" },{ "from": 50, "to": 60, "color": "rgba(255,0,0,.75)" },{ "from": 10, "to": 20, "color": "rgba(150,25,200,.35)" },{ "from": -10, "to": 0, "color": "rgba(50,0,255,.50)" },{ "from": -20, "to": -10, "color": "rgba(0,0,255,1)" }]');
+      tempData.setAttribute('data-color-needle-start', "rgba(240, 128, 128, 1)");
+      tempData.setAttribute('data-color-needle-end', "rgba(255, 160, 122, .9)");
+      tempData.setAttribute('data-value-box', 'true');
+      tempData.setAttribute('data-animation-rule', 'bounce');
+      tempData.setAttribute('data-font-value', 'Led');
+      tempData.onclick=function(){$('#SamplesModal').modal('show');console.log(this);document.getElementById('SensorNameSample').textContent=this.title;document.getElementById('SampleSize').innerHTML=memorySizeOf(Sensors[0].data);console.log(this.title);var s=samples[this.title];var options='';for(var e=0;e<s.length;e++){options+='<option>'+s[e].SampleName+'<option>'}; var input='<datalist id="options">'+options+'</datalist>'; $('#options').html(input);var querySelect = document.getElementById('sampleList'); $('#sampleList').val("");
+querySelect.addEventListener('change',(event)=>{
+for(var w=0;w<s.length;w++){
+  var l;
+  if($('#sampleList').val()==s[w].SampleName){l=s[w];}
+  
+}if(l==undefined||l==null){} else {var x=ConvertToExcel(l.data,l.time,l.SampleName);console.log(x); document.getElementById('SampleSize').innerText=parseFloat(x.size/1000).toString()+'  KiB'}
+});}
+      $("#temp").prepend(tempData);
+    } else if (Sensors[i].type == 'flo'){
+      var pressData = document.createElement('canvas');
+      pressData.setAttribute('id',Sensors[i].Dir);
+      pressData.setAttribute('title', Sensors[i].Name);
+      pressData.setAttribute('data-title', Sensors[i].Name);
+      pressData.setAttribute('data-type', 'radial-gauge');
+      pressData.setAttribute('data-width', 200);
+      pressData.setAttribute('data-height', 200);
+      pressData.setAttribute('data-value', 0);
+      pressData.setAttribute('data-units', "L/min");
+      pressData.setAttribute('data-major-ticks','0,10,20,30,40,50' );
+      pressData.setAttribute('data-max-value', "50");
+      pressData.setAttribute('data-min-value', "0");
+      pressData.setAttribute('data-stroke-ticks',"true" );
+      pressData.setAttribute('data-minor-ticks', "10");
+      pressData.setAttribute('data-highlights', '[{"from": 0, "to": 10, "color":"rgb(255,0,0)"},{ "from": 0, "to": 10, "color": "rgba(0,0,255,.0)" },{ "from": 20, "to":30, "color": "rgba(0,0,255,.25)" },{ "from": 30, "to": 40, "color": "rgba(0,0,255,.50)" },{ "from": 40, "to": 50, "color": "rgba(0,0,255,.75)" }');
+      pressData.setAttribute('data-color-needle-start', "rgba(240, 128, 128, 1)");
+      pressData.setAttribute('data-color-needle-end', "rgba(255, 160, 122, .9)");
+      pressData.setAttribute('data-value-box', 'true');
+      pressData.setAttribute('data-animation-rule', 'bounce');
+      pressData.setAttribute('data-font-value', 'Led');
+      tempData.onclick=function(){$('#SamplesModal').modal('show');console.log(this);document.getElementById('SensorNameSample').textContent=this.title;document.getElementById('SampleSize').innerHTML=memorySizeOf(Sensors[0].data);console.log(this.title);var s=samples[this.title];var options='';for(var e=0;e<s.length;e++){options+='<option>'+s[e].SampleName+'<option>'}; var input='<datalist id="options">'+options+'</datalist>'; $('#options').html(input);var querySelect = document.getElementById('sampleList'); $('#sampleList').val("");
+querySelect.addEventListener('change',(event)=>{
+for(var w=0;w<s.length;w++){
+  var l;
+  if($('#sampleList').val()==s[w].SampleName){l=s[w];}
+  
+}if(l==undefined||l==null){} else {var x=ConvertToExcel(l.data,l.time,l.SampleName);console.log(x); document.getElementById('SampleSize').innerText=parseFloat(x.size/1000).toString()+'  KiB'}
+});}
+      $("#flo").prepend(pressData);
+
+		}
+
+    }
+    document.body.style.cursor='default';
+  $('lgif1').remove();
+  $('lgif2').remove();
+  var client = new Paho.MQTT.Client("46.101.114.216", 1884, 'clientId'+Math.floor(Math.random()*10000));
+  client.onConnectionLost = onConnectionLost;
+  client.onMessageArrived = onMessageArrived;
+  client.connect({onSuccess:onConnect});
+  var onConnect 
+  console.log(client)
+  function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  client.subscribe("mcu/Llay-Llay TallerRobin/temperatura");
+	for (var i=0;i<Sensors.length;i++){
+	console.log(Sensors[i].topic)
+	if(Sensors[i].topic!=undefined){
+	client.subscribe(Sensors[i].topic);
+	}}
+  document.getElementById("mqttStatus").innerHTML = "connected";
+};
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0)  
+  console.log("onConnectionLost:"+responseObject.errorMessage);
+  document.getElementById("mqttStatus").innerHTML = "disconnected";
+};
+function onMessageArrived(message) {
+  if(typeof(message.payloadString=="number")){
+    document.getElementById(message.payloadString.split('|')[0].toString()).setAttribute("data-value", message.payloadString.split('|')[1]);
+  }
+
+    }; 
+
+});
+
+function downloadSamples(name,sample){
+if(sample){
+var l;
+for(var j=0;j<samples[name].length;j++){
+if(samples[name][j].SampleName==sample){
+  l=samples[name][j];
+} else {continue;}
+    }     
+  downloadExcel(ConvertToExcel(l.time,l.data,sample),sample);
+  }
+}
+function ConvertToExcel(x,y,name){
+var excel = XLSX.utils.book_new();
+excel.Props = {
+Title: name,
+Subject: "Nodxpress Data",
+Author: new URLSearchParams(window.location.search).get("user"),
+CreateDate: new Date()
+}
+excel.SheetNames.push(name);
+var values = [["Fecha","Muestra"]];
+for(var i=0;i<x.length;i++){if(parseFloat(y[i])==null|| parseFloat(y[i])==NaN){console.log('is NaN or null')};values.push([x[i],y[i]])}
+console.log(values);
+var sheetData =values;
+var ws = XLSX.utils.aoa_to_sheet(sheetData);
+excel.Sheets[name]=ws;
+
+var wbout = XLSX.write(excel, {bookType:'xlsx',  type: 'binary'});
+console.log(excel);
+//downloadExcel(new Blob([s2ab(wbout)],{type:"application/octet-stream"}),name);
+return new Blob([s2ab(wbout)],{type:"application/octet-stream"})
+}
+function s2ab(s){
+                var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+                var view = new Uint8Array(buf);  //create uint8array as viewer
+                for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+                return buf;  
+
+}
+function downloadExcel(excel,name){
+saveAs(excel, name+'.xlsx');
+};
+
+function preViewSample(name,sample) {
+if(sample){
+$('#preViewGraphModal').modal('show');
+document.getElementById('preViewGraphModal').setAttribute('style', 'zoom: 150%; transform: translate(0%, -10%);')
+var data = [];
+for(var j=0;j<samples[name].length;j++){
+if(samples[name][j].SampleName==sample){
+  l=samples[name][j];
+} else {continue;}
+
+}
+for(var i=0;i<l.data.length;i++){data.push({x: new Date(l.time[i]).getTime(),y: 10*parseFloat(l.data[i].replace(/,/g, ''))})}
+console.log(data);
+var chart = new CanvasJS.Chart("viewChart", {
+  animationEnabled: true,
+  title: {
+    text: name
+  },
+  axisX: {
+    title: "Tiempo"
+  },
+  axisY: {
+    title: "Muestra",
+    includeZero: true
+  },
+  data: [{
+    type: "line",
+    name: "CPU Utilization",
+    connectNullData: true,
+    nullDataLineDashType: "solid",
+    xValueType: "dateTime",
+    xValueFormatString: "DD MMM hh:mm TT",
+    yValueFormatString: "#,##0.##\"\"",
+    dataPoints: data
+  }]
+});
+chart.render();
+}}
+</script>
+<body style="background-color :#E6E6FA;">
+<div class="table-content" style="background-color: rgba(100,100,50,0.15);">
+  <div class="container ">
+    <div class="span-12" >
+      <!--white space-->
+      <br>
+      <div class="tab-content"style="border-bottom-color: rgb(0,0,0);border-bottom-width: 300px;">
+        <div class="tabbable" style="border-collapse: 10px">
+        <ul class="nav nav-tabs"style="border-bottom-color: 2px solid black;">
+              <li class="active"><a href="#temp" data-toggle="tab">Temperatura</a></li>
+              <li class=""><a href="#flo" data-toggle="tab">Caudalimetros</a></li>
+              <li class=""><a href="#pre"  data-toggle="tab">Barometros</a></li>
+              <li class=""><a href="#hum"  data-toggle="tab">Humedad</a></li>
+            </ul>
+      <div class="tab-content">
+      <div class="tab-pane span-12 active" style="border-left: 2px ;width: 1000px;" id="temp">
+        <br>
+        <br>
+        <br>
+      </div>
+	<div class="tab-pane span-12" style="border-left: 2px; width:1000px" id="pre">
+	<br>
+	<br>
+	<br>
+	</div>
+	<div class="tab-pane span-12" style="border-left: 2px; width:1000px" id="flo">
+	<br>
+	<br>
+	<br>
+	</div>
+	<div class="tab-pane span-12" style="border-left: 2px; width:1000px" id="hum">
+	<br>
+	<br>
+	<br>
+	</div>
+          </div>
+      </div>
+
+    </div>
+    </div>
+       
+  </div>
+</div>
+<datalist id="options">
+</datalist>
+
+
+</body>
+     <div id="SamplesModal" class="modal fade" style="zoom: 80%;" role="dialog">
+                                <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                                    
+                                <h4 class="modal-title">Tomar Muestras</h4>
+                                <a id="viewInfo" onclick="{console.log(document.getElementById('SamplesInfo').getAttribute('class'));if(document.getElementById('SamplesInfo').getAttribute('class')=='collapse'){document.getElementById('SamplesInfo').setAttribute('class', 'visible'); document.getElementById(this.id).innerHTML='Ocultar Informacion';} else {document.getElementById('SamplesInfo').setAttribute('class', 'collapse');document.getElementById(this.id).innerHTML='Ver Informacion'}}">Ver informacion</a>
+                                <p class="collapse" id="SamplesInfo">Configure un sensor para tomar muestras de forma periodica durante un tiempo que usted determine, luego puede oprimir "Obtener Datos" para generar una tabla con los datos correspondientes ¡cuando usted quiera!, las muestras obtenidas se guardaran en una <strong>base de datos</strong> si usted lo desea, si no solo se guardara la ultima muestra programada. <strong>¡La toma de muestras no se puede cancelar!</strong></p>
+                            </div>
+                            <div class="modal-body">
+                                   <h6>Sensor seleccionado: <strong id="SensorNameSample"></strong></h6>
+                                   <hr> 
+                                  <div>
+                                  <label for="SampleName"><h6><strong>Nombre Muestra:</strong></h6></label>
+                                  <input type="list" name="SampleName" id="SampleName">
+                                  <br><label for="periodicSample">Periodo entre Muestra (segundos):</label>
+                                  <input type="number" name="periodicSample" id="periodicSample" min="1" max="3600">
+                                  <br>
+                                  <label for="timeSample">Tiempo (horas):</label>
+                                  <input type="number" name="timeSample" min="0,016" id="timeSample" max="8760">
+                                  </div>
+                            <div class="modal-footer">
+                              <div><label>Muestras del usuario:<input type="list" list="options" name="sampleList" id=sampleList><input onclick="preViewSample(document.getElementById('SensorNameSample').innerText,$('#sampleList').val())" type="image" title="Ver Datos" src="https://image.flaticon.com/icons/png/512/65/65000.png" height="30" width="30"><h5>Peso del Archivo:<strong id="SampleSize">cargando...</strong></h5></label></div>
+                            <button type="button" class="btn btn-success" onclick="takeSamples()">Tomar datos</button><button type="btn" class="btn btn-info"  onclick="downloadSamples(document.getElementById('SensorNameSample').innerText,$('#sampleList').val())"id="DownloadSamples" >Descargar datos</button><button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+     <div id="preViewGraphModal" class="modal fade" role="dialog" style="zoom:100%">
+                                <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                                <h4 class="modal-title">Vista Previa de <strong id="preViewSampleName"></strong></h4>
+                            </div>
+                            <div class="modal-body">
+                                <div id="viewChart" style="width: 1000px; height: 550px; zoom:50%; border-bottom: 10px;"></div>
+                            <div class="modal-footer">
+                            <button class="btn btn-default" type="button" onclick="{$('#preViewGraphModal').modal('hide');}">Cerrar</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+

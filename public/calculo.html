@@ -1,0 +1,198 @@
+<!--calculo-->
+<!DOCTYPE html>
+<html>
+ <!-- jQuery -->
+  <script src="js/jquery.js"></script>
+  <!-- nav -->
+  <script src="js/jquery.scrollTo.js"></script>
+  <script src="js/jquery.nav.js"></script>
+  <!-- localScroll -->
+  <script src="js/jquery.localScroll.js"></script>
+  <!-- bootstrap -->
+  <script src="js/bootstrap.js"></script>
+  <!-- prettyPhoto -->
+  <script src="js/jquery.prettyPhoto.js"></script>
+  <!-- Works scripts -->
+  <script src="js/isotope.js"></script>
+  <!-- flexslider -->
+  <script src="js/jquery.flexslider.js"></script>
+  <!-- inview -->
+  <script src="js/inview.js"></script>
+  <!-- animation -->
+  <script src="js/animate.js"></script>
+  <!-- twitter -->
+  <!--<script src="js/jquery.tweet.js"></script>-->
+  <!-- custom functions -->
+  <script src="js/custom.js"></script>
+<head>calculo para laboratorio</head>
+<body class="container">
+<h2>Calculo de varianza, covarianza, etc...</h2>
+
+<label for="covarinputx">Datos Eje X (separelos por comas):<input type="text" name="covarinputx" id="covarinputx" placeholder="Introduzca su arreglo de datos X"></label><h5>Largo: <strong id="lenghtx"></strong></h5>
+<hr>
+
+<label for="covarinputy">Datos Eje Y (separelos por comas):<input type="text" name="covarinputx" id="covarinputy" placeholder="Introduzca su arreglo de datos X"></label><h5>Largo: <strong id="lengthy"></strong></h5>
+<hr>
+<label for="options">Elija una opción: <input type="list" list="data" name="options" id="options"></label>
+<button id="calcular">CALCULAR</button>
+<h3><STRONG>Resultado</STRONG></h3>
+<div id="result">
+</div>
+</body>
+<datalist id="data">
+	<option>Covarianza</option>
+	<option>Coeficiente de Correlacion</option>
+	<option>Varianza (x)</option>
+	<option>Varianza (y)</option>
+	<option>Sumatoria (x)</option>
+	<option>Sumatoria (y)</option>
+	<option>Coeficiente de correlacion R^2</option>
+	<option>Tasa (para estudios poblacionales)</option>
+	<option>Tendencia Lineal (n=2)</option>
+</datalist>
+<script type="text/javascript">
+	polinomial([1,2,3],[2,3,4],3);
+	$('#covarinputx').change(function(){
+	var x=$('#covarinputx').val().split(',');
+	console.log('x',x);
+	document.getElementById('lenghtx').innerHTML=parseInt(x.length);
+	});
+	$('#covarinputy').change(function(){
+	var y=$('#covarinputy').val().split(',');
+	console.log('x',y);
+	document.getElementById('lengthy').innerHTML=parseInt(y.length);
+	});
+	function coef(x,y){ 
+	var promy=prom(y); var promx=prom(x); var up=0;var down=[0,0];
+	for(var e=0;e<x.length;e++){
+		up+=(parseFloat(x[e])-promx)*(parseFloat(y[e])-promy);
+		down[0]+=Math.pow((parseFloat(x[e])-promx),2);down[1]+=Math.pow((parseFloat(y[e])-promy),2);
+		console.log(down)
+	};
+	var covar = parseFloat(up/(Math.sqrt(down[0])*Math.sqrt(down[1])))
+	console.log('Coeficiente de correlacion:',covar);
+	return covar;
+};
+
+	$("#calcular").click(function(event){
+		var array= [];
+		array[1]=$('#covarinputy').val().split(' '); array[0]=$('#covarinputx').val().split(' ');
+		array[0] = array.filter(function (user) { 
+    	return array != ' ';
+    	});
+    	array[1] = array.filter(function (user) { 
+    	return array != ' ';
+    	});
+    	console.log(array[0]);
+		if($("#options").val()=="Covarianza"){
+			$("#result").html('<h4>Covarianza:</h4><strong> '+covar(array[0][0],array[0][1])+'</strong>')
+		} else if($("#options").val()=="Coeficiente de Correlacion"){$("#result").html('<h4>Coeficiente de correlacion:</h4><strong> '+coef(array[0][0],array[0][1])+'</strong>')} else if($("#options").val()=="Tasa (para estudios poblacionales)"){$("#result").html('<h4>Tasa:</h4><strong> '+tasa($('#covarinputx').val().split(','),$('#covarinputy').val().split(','))+'</strong>')} else if($("#options").val()=="Varianza (x)"){$("#result").html('<h4>Varianza (x):</h4><strong> '+vari(array[0][0])+'</strong>')}else if($("#options").val()=="Varianza (y)"){$("#result").html('<h4>Varianza (y):</h4><strong> '+vari(array[0][1])+'</strong>')}else if($("#options").val()=="Coeficiente de correlacion R^2"){$("#result").html('<h4>Coeficiente de Determinacion R^2:</h4><strong> '+coefDet(array[0][1],array[0][1])+'</strong>')}else if($("#options").val()=="Tendencia Lineal (n=2)"){$("#result").html('<h4>Tendencia Lineal:</h4><strong> '+linearRegression(array[0][1],array[0][0])+'</strong>')}else if($("#options").val()=="Sumatoria (x)"){$("#result").html('<h4>Sumatoria (x):</h4><strong> '+sum(array[0][0])+'</strong>')}else if($("#options").val()=="Sumatoria (y)"){$("#result").html('<h4>Sumatoria (y):</h4><strong> '+sum(array[0][1])+'</strong>')}
+	});	
+
+function prom(x){
+	console.log(x);
+	var prom=0;
+	for(var i=0; i<x.length;i++){
+		prom+=parseFloat(x[i]);
+	} prom=prom/(x.length);
+	return prom;
+};
+function covar(x,y){
+	console.log(x,y)
+var promx=prom(x); var promy=prom(y);
+if(x.length==y.length){
+	var covar=0;
+	console.log(promx,promy)
+	for(var i=0;i<x.length;i++){
+		covar+=(parseFloat(x[i])-promx)*(parseFloat(y[i])-promy);
+	}; covar=(covar/x.length);
+	console.log('Covarianza:',covar)
+	return covar;
+	} else {console.log('Los arreglos deben tener el mismo largo')}
+};
+function coefDet (x,y) {
+		console.log(prom(x,y));
+		var covar=covar(x,y); var varx=vari(x); var vary=vari(y);
+		var coef=(Math.pow(covar),2)/((Math.pow(varx,2))*(Math.pow(vary,2)));
+		console.log(coef);return coef;
+	};
+function tasa(habitantes,casos){
+	if(typeof(casos) && typeof(habitantes)=='object'){
+	var array=[];
+	if(casos.length==habitantes.length){
+	for(var i=0;i<casos.length;i++){
+	array[i]=(parseFloat(casos[i]))/(habitantes[i]/100000);
+	} console.log(array); return array;} else {console.log('Los arreglos deben tener el mismo largo')}};
+};
+
+function vari(x){
+	var vari=0;console.log(x);
+	var promx=prom(x);console.log(promx); for(var i=0;i<x.length;i++){
+		vari=+Math.pow((parseFloat(x[i])-promx),2);
+		console.log(vari);
+	} if(vari!=0){vari=Math.sqrt((vari)/(x.length-1))};
+	console.log(vari);return vari;
+};
+function linearRegression(y,x){
+	console.log(x)
+        var lr = {};
+        var n = x.length;
+        var sum_x = 0;
+        var sum_y = 0;
+        var sum_xy = 0;
+        var sum_xx = 0;
+        var sum_yy = 0;
+        for (var i = 0; i < y.length; i++) {
+            sum_x += parseFloat(x[i]);
+            sum_y += parseFloat(y[i]);
+            sum_xy += parseFloat(parseFloat(x[i])*parseFloat(y[i]));
+            sum_xx += parseFloat(parseFloat(x[i])*parseFloat(x[i]));
+            sum_yy += parseFloat(parseFloat(y[i])*parseFloat(y[i]));
+        } 
+        console.log(sum_x);
+        console.log(sum_xy);
+        console.log(sum_xx+'|'+sum_yy+'|'+sum_y+'|'+sum_x+'|'+n);
+        lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
+        lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
+        lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
+        console.log(lr);
+        if(lr.slope==1){lr.slope=""} 
+        if (lr.intercept==0){lr.intercept=""
+        	}
+    	if(lr.intercept>0){lr.intercept='+'+lr.intercept};
+        var ecuation ='f(x)='+lr.slope+'x '+lr.intercept;
+        
+        return ecuation;
+}
+function sum(x){
+	var sum=0;
+	for(var i=0;i<x.length;i++){
+		sum+=parseFloat(x[i]);
+	}; return sum;
+}
+
+function polinomial (x,y,t){
+	var n = y.length; var funct=""; var coef=[]; var factors=[];;
+	for(var i=0;i<t;i++){coef[i]=' a'+i;factors[i]='x^'+i; if(i==0){factors[0]=''}};for(var e=0;e<coef.length;e++){funct+=coef[(t-1)-e]+factors[(t-1)-e]};console.log(coef);console.log(factors);console.log(funct);
+}
+document.forms.formulario.addEventListener('submit', function(e) {
+  e.preventDefault(); // Don't send form
+  var expr = this.elements.func.value,
+      diff = nerdamer.getCore().Calculus.diff(nerdamer(expr).symbol).text();
+  document.getElementById('text').textContent = diff;
+});
+</script>
+<br>
+<br>
+<br>
+<h4>DERIVADAS</h4>
+<script src="http://nerdamer.com/js/nerdamer.core.js"></script>
+<script src="http://nerdamer.com/js/Algebra.js"></script>
+<script src="http://nerdamer.com/js/Calculus.js"></script>
+<form name="formulario">         
+    Función:
+  <input name="func" type="text" size="15" />           
+  <input type="submit" value="Differentiate"/>   
+</form>
+<div id="text"></div>
+</html>
